@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SFML.Graphics" Version="2.5.0" />
+      <PackageReference Include="SFML.System" Version="2.5.0" />
+      <PackageReference Include="SFML.Window" Version="2.5.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\GameOfLife.Model\GameOfLife.Model.csproj" />
+    </ItemGroup>
+
+</Project>
