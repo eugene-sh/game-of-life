@@ -1,100 +1,193 @@
 ﻿using System;
-using System.Buffers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GameOfLife.Model
 {
-    public class Universe
-    {
-        public const int UniverseSize = 500;
-        
-        public int[,] Field { get; }
-        public int[,] Field2 { get; }
-        
-        public Universe()
-        {
-            Field = new int[UniverseSize, UniverseSize];
-            Field2 = new int[UniverseSize, UniverseSize];
+	public class Universe
+	{
+		public List<List<Property>> Field { get; } = new List<List<Property>>();
 
-            Field[6, 3] = 1;
-            Field[7, 4] = 1;
-            Field[8, 2] = 1;
-            Field[8, 3] = 1;
-            Field[8, 4] = 1;
-        }
+		private readonly UniverseParams _universeParams;
 
-        public void Print()
-        {
-            for (var i = 0; i < Field.GetLength(0); i++)
-            {
-                for (var j = 0; j < Field.GetLength(1); j++)
-                {
-                    Console.Write(Field[i, j]);
-                }
+		public Universe(UniverseParams universeParams)
+		{
+			_universeParams = universeParams;
 
-                Console.WriteLine();
-            }
-        }
+			FieldInitialization();
+		}
 
-        public void SetFilled(int x, int y)
-        {
-            var xx = (int)Math.Floor(Convert.ToDouble(x / 10));
-            var yy = (int)Math.Floor(Convert.ToDouble(y / 10));
-            
-            Field[yy, xx] = 1;
-        }
+		private void FieldInitialization()
+		{
+			for (var i = 0; i < _universeParams.Size.Height; i++)
+			{
+				Field.Add(new List<Property>());
 
-        public int? WhatTodo(int x, int y)
-        {
-            var n = 0;
-            
-            for (var i = x - 1; i <= x + 1; i++)
-            {
-                for (var j = y - 1; j <= y + 1; j++)
-                {
-                    if (i == x && j == y)
-                        continue;
+				for (var j = 0; j < _universeParams.Size.Width; j++)
+				{
+					Field[i].Add(new Property
+					{
+						State = PropertyState.Empty,
+						Address = new PropertyAddress
+						{
+							X = i,
+							Y = j
+						}
+					});
+				}
+			}
 
-                    if (i < 0 || j < 0)
-                        continue;
-                    if (i >= UniverseSize || j >= UniverseSize)
-                        continue;
-                    
-                    if (Field[i, j] == 1)
-                        n++;
-                }
-            }
+			Field[6][3].State = PropertyState.Populated;
+			Field[7][4].State = PropertyState.Populated;
+			Field[8][2].State = PropertyState.Populated;
+			Field[8][3].State = PropertyState.Populated;
+			Field[8][4].State = PropertyState.Populated;
+		}
 
-            if (n <= 1 || n >= 4)
-                return 0;
 
-            if (n == 3)
-                return 1;
-            
-            return null;
-        }
+		private Dictionary<Property, ActionOnProperty>
+			actionOnProperties = new Dictionary<Property, ActionOnProperty>();
 
-        public void GameStep()
-        {
-            for (var i = 0; i < Field2.GetLength(0); i++)
-            {
-                for (var j = 0; j < Field2.GetLength(1); j++)
-                {
-                    Field2[i, j] = WhatTodo(i, j) ?? Field[i, j];
-                    
-                   // Console.Write(Field2[i, j]);
-                }
+		public Dictionary<PropertyAddress, Property> Diff = new Dictionary<PropertyAddress, Property>();
 
-                //Console.WriteLine();
-            }
-            
-            for (var i = 0; i < Field2.GetLength(0); i++)
-            {
-                for (var j = 0; j < Field2.GetLength(1); j++)
-                {
-                    Field[i, j] = Field2[i, j];
-                }
-            }
-            
-        }
-    }
+		public void NextGeneration()
+		{
+			var nForNext = new Dictionary<PropertyAddress, Property>();
+			var nForRem = new Dictionary<PropertyAddress, Property>();
+			foreach (var p in Diff)
+			{
+				var actionOnProperty = GetActionOnProperty(p.Key.X, p.Key.Y);
+
+				if (actionOnProperty == ActionOnProperty.Nothing)
+				{
+					nForRem.Add(p.Key, p.Value);
+					continue;
+				}
+
+
+				actionOnProperties[Field[p.Key.X][p.Key.Y]] = actionOnProperty;
+
+				foreach (var neighbor in GetNeighbors(p.Key.X, p.Key.Y))
+				{
+					nForNext[neighbor.Address] = neighbor;
+				}
+			}
+
+			foreach (var item in nForRem)
+			{
+				Diff.Remove(item.Key);
+			}
+
+			nForRem.Clear();
+			foreach (var item in nForNext)
+			{
+				if (!Diff.ContainsKey(item.Key))
+				{
+					Diff.Add(item.Key, item.Value);
+				}
+			}
+
+			nForNext.Clear();
+
+			if (!Diff.Any())
+				for (var i = 0; i < _universeParams.Size.Height; i++)
+				{
+					for (var j = 0; j < _universeParams.Size.Width; j++)
+					{
+						var actionOnProperty = GetActionOnProperty(i, j);
+
+						if (actionOnProperty == ActionOnProperty.Nothing)
+							continue;
+
+						actionOnProperties[Field[i][j]] = actionOnProperty;
+
+						foreach (var neighbor in GetNeighbors(i, j))
+						{
+							Diff[neighbor.Address] = neighbor;
+						}
+					}
+				}
+
+
+			foreach (var actionOnProperty in actionOnProperties)
+			{
+				actionOnProperty.Key.State = actionOnProperty.Value switch
+				{
+					ActionOnProperty action when action == ActionOnProperty.Build => PropertyState.Populated,
+					ActionOnProperty action when action == ActionOnProperty.Destroy => PropertyState.Empty,
+					_ => throw new ArgumentOutOfRangeException(nameof(actionOnProperty))
+				};
+			}
+
+			actionOnProperties.Clear();
+		}
+
+		private ActionOnProperty GetActionOnProperty(int x, int y)
+		{
+			var neighbors = 0;
+
+			// Looking for neighbors
+			for (var i = x - 1; i <= x + 1; i++)
+			for (var j = y - 1; j <= y + 1; j++)
+			{
+				if (i == x && j == y)
+					continue;
+
+				if (i < 0 || j < 0)
+					continue;
+
+				if (i >= _universeParams.Size.Height
+				    || j >= _universeParams.Size.Width)
+					continue;
+
+				if (Field[i][j].State == PropertyState.Populated)
+					neighbors++;
+			}
+
+			return neighbors switch
+			{
+				int n when neighbors != 0 && (n <= 1 || n >= 4) => ActionOnProperty.Destroy,
+				int n when n == 3 => ActionOnProperty.Build,
+				_ => ActionOnProperty.Nothing
+			};
+		}
+
+		private IEnumerable<Property> GetNeighbors(int x, int y)
+		{
+			for (var i = x - 1; i <= x + 1; i++)
+			for (var j = y - 1; j <= y + 1; j++)
+			{
+				if (i == x && j == y)
+					continue;
+
+				if (i < 0 || j < 0)
+					continue;
+
+				if (i >= _universeParams.Size.Height
+				    || j >= _universeParams.Size.Width)
+					continue;
+
+				yield return Field[i][j];
+			}
+		}
+	}
+
+	public class UniverseParams
+	{
+		public UniverseSize Size { get; set; }
+		//public List<List<Citizen>> InitialState { get; set; }
+	}
+
+	public class UniverseSize
+	{
+		public int Height { get; set; }
+		public int Width { get; set; }
+	}
+
+	public enum ActionOnProperty
+	{
+		Destroy,
+		Build,
+		Nothing
+	}
 }
