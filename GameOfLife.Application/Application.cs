@@ -32,36 +32,36 @@ namespace GameOfLife.Application
 		// TODO: Need to improve this thing when field editor appears.
 		private Universe InitializeUniverse()
 		{
-			var field = new List<List<Property>>();
-			for (var i = 0; i < _gameParams.CountPropertyInHeight; i++)
+			var field = new List<List<Cell>>();
+			for (var i = 0; i < _gameParams.CountCellInHeight; i++)
 			{
-				field.Add(new List<Property>());
+				field.Add(new List<Cell>());
 				_shapes.Add(new List<RectangleShape>());
 
-				for (var j = 0; j < _gameParams.CountPropertyInWidth; j++)
+				for (var j = 0; j < _gameParams.CountCellInWidth; j++)
 				{
-					field[i].Add(new Property
+					field[i].Add(new Cell
 					{
-						State = PropertyState.Empty,
-						Address = new PropertyAddress(i, j)
+						State = CellState.Unpopulated,
+						Position = new CellPosition(i, j)
 					});
 					
 					_shapes[i].Add(new RectangleShape(
-						new Vector2f(_gameParams.WindowWidth, _gameParams.PropertyHeight))
+						new Vector2f(_gameParams.WindowWidth, _gameParams.CellHeight))
 					{
 						FillColor = Color.White,
 						OutlineColor = Color.Black,
 						OutlineThickness = 1,
-						Position = new Vector2f(j * _gameParams.PropertyWidth, i * _gameParams.PropertyHeight)
+						Position = new Vector2f(j * _gameParams.CellWidth, i * _gameParams.CellHeight)
 					});
 				}
 			}
 
-			field[6][3].State = PropertyState.Populated;
-			field[7][4].State = PropertyState.Populated;
-			field[8][2].State = PropertyState.Populated;
-			field[8][3].State = PropertyState.Populated;
-			field[8][4].State = PropertyState.Populated;
+			field[6][3].State = CellState.Populated;
+			field[7][4].State = CellState.Populated;
+			field[8][2].State = CellState.Populated;
+			field[8][3].State = CellState.Populated;
+			field[8][4].State = CellState.Populated;
 
 			return new Universe(new UniverseParams
 			{
@@ -90,9 +90,9 @@ namespace GameOfLife.Application
 
 		private void SyncWithUniverse()
 		{
-			foreach (var (propertyAddress, property) in _universe.TrackList)
-				_shapes[propertyAddress.X][propertyAddress.Y].FillColor
-					= property.State == PropertyState.Empty ? Color.White : Color.Green;
+			foreach (var (cellPosition, cell) in _universe.TrackCells)
+				_shapes[cellPosition.X][cellPosition.Y].FillColor
+					= cell.State == CellState.Unpopulated ? Color.White : Color.Green;
 		}
 	}
 }

@@ -1,8 +1,8 @@
 namespace GameOfLife.Model
 {
-	public class PropertyAddress
+	public class CellPosition
 	{
-		public PropertyAddress(int x, int y)
+		public CellPosition(int x, int y)
 		{
 			X = x;
 			Y = y;

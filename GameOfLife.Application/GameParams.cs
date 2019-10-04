@@ -5,10 +5,10 @@ namespace GameOfLife.Application
 		public uint WindowWidth { get; set; }
 		public uint WindowHeight { get; set; }
 		public string WindowTitle { get; set; }
-		public uint PropertyWidth { get; set; }
-		public uint PropertyHeight { get; set; }
+		public uint CellWidth { get; set; }
+		public uint CellHeight { get; set; }
 
-		public uint CountPropertyInWidth => WindowWidth / PropertyWidth;
-		public uint CountPropertyInHeight => WindowHeight / PropertyHeight;
+		public uint CountCellInWidth => WindowWidth / CellWidth;
+		public uint CountCellInHeight => WindowHeight / CellHeight;
 	}
 }

@@ -1,8 +1,8 @@
 namespace GameOfLife.Model
 {
-	public enum PropertyState
+	public enum CellState
 	{
 		Populated,
-		Empty
+		Unpopulated
 	}
 }

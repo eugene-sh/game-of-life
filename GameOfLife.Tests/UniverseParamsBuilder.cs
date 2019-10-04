@@ -8,7 +8,7 @@ namespace GameOfLife.Tests
 	{
 		private readonly UniverseParams _universeParams;
 
-		private readonly List<Property> _properties = new List<Property>();
+		private readonly List<Cell> _cells = new List<Cell>();
 
 		public UniverseParamsBuilder()
 		{
@@ -21,15 +21,15 @@ namespace GameOfLife.Tests
 			return this;
 		}
 
-		public UniverseParamsBuilder WithField(List<List<Property>> field)
+		public UniverseParamsBuilder WithField(List<List<Cell>> field)
 		{
 			_universeParams.Field = field;
 			return this;
 		}
 
-		public UniverseParamsBuilder WithProperty(Property property)
+		public UniverseParamsBuilder WithCell(Cell cell)
 		{
-			_properties.Add(property);
+			_cells.Add(cell);
 			return this;
 		}
 
@@ -47,26 +47,26 @@ namespace GameOfLife.Tests
 			return _universeParams;
 		}
 
-		private List<List<Property>> GenerateDefaultField(int height, int width)
+		private List<List<Cell>> GenerateDefaultField(int height, int width)
 		{
-			var field = new List<List<Property>>();
+			var field = new List<List<Cell>>();
 			for (var i = 0; i < height; i++)
 			{
-				field.Add(new List<Property>());
+				field.Add(new List<Cell>());
 
 				for (var j = 0; j < width; j++)
 				{
-					var requestedProperty = _properties.FirstOrDefault(p => p.Address.X == i && p.Address.Y == j);
-					if (requestedProperty != null)
+					var requestedCell = _cells.FirstOrDefault(p => p.Position.X == i && p.Position.Y == j);
+					if (requestedCell != null)
 					{
-						field[i].Add(requestedProperty);
+						field[i].Add(requestedCell);
 						continue;
 					}
 
-					field[i].Add(new Property
+					field[i].Add(new Cell
 					{
-						State = PropertyState.Empty,
-						Address = new PropertyAddress(i, j)
+						State = CellState.Unpopulated,
+						Position = new CellPosition(i, j)
 					});
 				}
 

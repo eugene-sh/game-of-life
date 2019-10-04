@@ -6,7 +6,7 @@ namespace GameOfLife.Model
 	{
 		public UniverseSize Size { get; set; }
 
-		public List<List<Property>> Field { get; set; } = new List<List<Property>>();
+		public List<List<Cell>> Field { get; set; } = new List<List<Cell>>();
 	}
 
 

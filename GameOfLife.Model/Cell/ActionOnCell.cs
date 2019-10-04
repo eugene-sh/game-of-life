@@ -1,9 +1,9 @@
 namespace GameOfLife.Model
 {
-	public enum ActionOnProperty
+	public enum ActionOnCell
 	{
 		Destroy,
-		Build,
+		Populate,
 		Nothing
 	}
 }

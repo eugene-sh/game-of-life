@@ -9,8 +9,8 @@
 				WindowTitle = "Game Of Life",
 				WindowWidth = 500,
 				WindowHeight = 500,
-				PropertyHeight = 10,
-				PropertyWidth = 10
+				CellHeight = 10,
+				CellWidth = 10
 			};
 
 			new Application(gameParams).Start();

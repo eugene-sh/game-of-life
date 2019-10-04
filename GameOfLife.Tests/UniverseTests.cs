@@ -21,11 +21,11 @@ namespace GameOfLife.Tests
 
 			universe.NextGeneration();
 
-			universe.TrackList.ShouldBeEmpty();
+			universe.TrackCells.ShouldBeEmpty();
 		}
 
 		[Test]
-		public void LonelyPropertyWillBeRemove()
+		public void LonelyCellWillBeRemove()
 		{
 			/*
 			 * 0 0 0 0
@@ -34,20 +34,20 @@ namespace GameOfLife.Tests
 			 * 0 0 0 0
 			 */
 			var universeParams = new UniverseParamsBuilder()
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 1),
+					State = CellState.Populated
 				})
 				.Build();
 			var universe = new Universe(universeParams);
 
-			universe.TrackList.ShouldNotBeEmpty();
-			universe.TrackList.Count.ShouldBe(8);
+			universe.TrackCells.ShouldNotBeEmpty();
+			universe.TrackCells.Count.ShouldBe(8);
 			
 			universe.NextGeneration();
 
-			universe.TrackList.ShouldBeEmpty();
+			universe.TrackCells.ShouldBeEmpty();
 		}
 		
 		[Test]
@@ -60,41 +60,41 @@ namespace GameOfLife.Tests
 			 * 0 0 0 0
 			 */
 			var universeParams = new UniverseParamsBuilder()
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 1),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 2),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 1),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 2),
+					State = CellState.Populated
 				})
 				.Build();
 
 			var universe = new Universe(universeParams);
 
-			universe.TrackList.ShouldBeEmpty();
-			universe.TrackList.Count.ShouldBe(0);
+			universe.TrackCells.ShouldBeEmpty();
+			universe.TrackCells.Count.ShouldBe(0);
 			
 			universe.NextGeneration();
 
-			universe.TrackList.ShouldBeEmpty();
-			universe.TrackList.Count.ShouldBe(0);
+			universe.TrackCells.ShouldBeEmpty();
+			universe.TrackCells.Count.ShouldBe(0);
 		}
 		
 		[Test]
-		public void BuildNewPropertyWhenThreeNeighbors()
+		public void PopulateNewCellWhenThreeNeighbors()
 		{
 			/*
 			 * 0 0 0 0
@@ -103,36 +103,36 @@ namespace GameOfLife.Tests
 			 * 0 0 0 0
 			 */
 			var universeParams = new UniverseParamsBuilder()
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 1),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 2),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 1),
+					State = CellState.Populated
 				})
 				.Build();
 
 			var universe = new Universe(universeParams);
 
-			universe.TrackList.ShouldNotBeEmpty();
-			universe.TrackList.Count.ShouldBe(8);
+			universe.TrackCells.ShouldNotBeEmpty();
+			universe.TrackCells.Count.ShouldBe(8);
 			
 			universe.NextGeneration();
 
-			universe.TrackList.ShouldBeEmpty();
-			universe.TrackList.Count.ShouldBe(0);
+			universe.TrackCells.ShouldBeEmpty();
+			universe.TrackCells.Count.ShouldBe(0);
 		}
 		
 		[Test]
-		public void DestroyPropertyWhenMoreThanThreeNeighbors()
+		public void DestroyCellWhenMoreThanThreeNeighbors()
 		{
 			/*
 			 * 0 0 0 0 0
@@ -142,40 +142,40 @@ namespace GameOfLife.Tests
 			 * 0 0 0 0 0
 			 */
 			var universeParams = new UniverseParamsBuilder()
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 1),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 1),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 3),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 3),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(1, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(1, 2),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(3, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(3, 2),
+					State = CellState.Populated
 				})
-				.WithProperty(new Property
+				.WithCell(new Cell
 				{
-					Address = new PropertyAddress(2, 2),
-					State = PropertyState.Populated
+					Position = new CellPosition(2, 2),
+					State = CellState.Populated
 				})
 				.Build();
 
 			var universe = new Universe(universeParams);
 
-			universe.Field[2][2].State.ShouldBe(PropertyState.Populated);
+			universe.Field[2][2].State.ShouldBe(CellState.Populated);
 
 			universe.NextGeneration();
 
-			universe.Field[2][2].State.ShouldBe(PropertyState.Empty);
+			universe.Field[2][2].State.ShouldBe(CellState.Unpopulated);
 		}
 	}
 }
