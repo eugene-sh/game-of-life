@@ -13,3 +13,4 @@ jobs:
       with:
         dotnet-version: '3.0.100'
     - run: dotnet build
+    - run: dotnet test

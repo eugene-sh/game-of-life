@@ -80,8 +80,8 @@ namespace GameOfLife.Model
 			{
 				// TODO: 0_0
 				int n when n == 0 && property.State == PropertyState.Empty => ActionOnProperty.Nothing,
-				int n when (property.State == PropertyState.Populated && n == 1 || n >= 4 || n == 0) => ActionOnProperty.Destroy,
-				int n when n == 3 => ActionOnProperty.Build,
+				int n when property.State == PropertyState.Populated && n == 1 || n >= 4 || n == 0 => ActionOnProperty.Destroy,
+				int n when property.State == PropertyState.Empty && n == 3 => ActionOnProperty.Build,
 				_ => ActionOnProperty.Nothing
 			};
 		}
